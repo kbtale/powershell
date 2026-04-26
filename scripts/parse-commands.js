@@ -18,12 +18,37 @@ async function getPs1Files(dir) {
     return Array.prototype.concat(...files).filter(f => f.endsWith('.ps1'));
 }
 
+async function parseFile(filePath) {
+    const content = await fs.readFile(filePath, 'utf8');
+    
+    // comment-based help block
+    const cbhMatch = content.match(/<#([\s\S]*?)#>/);
+    const cbh = cbhMatch ? cbhMatch[1] : '';
+
+    const extractTag = (tag) => {
+        const regex = new RegExp(`\\.${tag}\\r?\\n\\s*([\\s\\S]*?)(?=\\n\\.|$)`, 'i');
+        const match = cbh.match(regex);
+        return match ? match[1].trim() : '';
+    };
+
+    return {
+        id: path.basename(filePath, '.ps1'),
+        name: extractTag('SYNOPSIS') || path.basename(filePath, '.ps1'),
+        description: extractTag('DESCRIPTION'),
+        category: extractTag('CATEGORY') || path.dirname(filePath).split(path.sep).pop(),
+        path: filePath,
+        rawCode: content
+    };
+}
+
 async function main() {
     console.log('Scanning for PowerShell commands...');
     
     try {
         const files = await getPs1Files(COMMANDS_DIR);
-        console.log(`Found ${files.length} scripts:`, files.map(f => path.basename(f)));
+        const commands = await Promise.all(files.map(parseFile));
+        
+        console.log(`Found ${commands.length} scripts`);
         
     } catch (err) {
         console.error('Parser Error:', err);
