@@ -31,11 +31,30 @@ async function parseFile(filePath) {
         return match ? match[1].trim() : '';
     };
 
+    // get parameters from param() block
+    const paramMatch = content.match(/param\s*\(([\s\S]*?)\)/i);
+    const paramBlock = paramMatch ? paramMatch[1] : '';
+    const params = [];
+
+    // regex for: [type]$Name = "Default"
+    const paramRegex = /(?:\[(\w+)\])?\s*\$(\w+)(?:\s*=\s*(['"]?)(.*?)\3)?/g;
+    let match;
+    while ((match = paramRegex.exec(paramBlock)) !== null) {
+        const [_, type, name, quote, defaultValue] = match;
+        params.push({
+            name,
+            type: type || 'string',
+            defaultValue: defaultValue || '',
+            description: extractTag(`PARAMETER ${name}`)
+        });
+    }
+
     return {
         id: path.basename(filePath, '.ps1'),
         name: extractTag('SYNOPSIS') || path.basename(filePath, '.ps1'),
         description: extractTag('DESCRIPTION'),
         category: extractTag('CATEGORY') || path.dirname(filePath).split(path.sep).pop(),
+        parameters: params,
         path: filePath,
         rawCode: content
     };
