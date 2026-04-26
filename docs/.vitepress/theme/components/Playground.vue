@@ -37,11 +37,35 @@ onMounted(() => {
               {{ param.name }}
               <span class="type">[{{ param.type }}]</span>
             </label>
+
+            <!-- specialized inputs based on type -->
+            <div v-if="param.type.toLowerCase() === 'switch'" class="toggle-container">
+              <input 
+                type="checkbox"
+                :id="param.name"
+                v-model="variables[param.name]"
+                class="checkbox"
+              />
+              <span class="toggle-label">{{ variables[param.name] ? 'Enabled' : 'Disabled' }}</span>
+            </div>
+
             <input 
+              v-else-if="['int', 'long', 'decimal', 'double'].includes(param.type.toLowerCase())"
+              type="number"
+              :id="param.name"
+              v-model.number="variables[param.name]"
+              class="input-field"
+            />
+
+            <input 
+              v-else
+              type="text"
               :id="param.name"
               v-model="variables[param.name]"
-              class="input-placeholder"
+              class="input-field"
+              :placeholder="param.defaultValue"
             />
+
             <p v-if="param.description" class="help-text">{{ param.description }}</p>
           </div>
         </div>
@@ -119,12 +143,36 @@ onMounted(() => {
   margin-left: 0.5rem;
 }
 
-.input-placeholder {
+.input-field {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.625rem;
   border: 1px solid var(--vp-c-divider);
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--vp-c-bg);
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+}
+
+.input-field:focus {
+  border-color: var(--vp-c-brand);
+  outline: none;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+.toggle-label {
+  font-size: 0.875rem;
+  color: var(--vp-c-text-1);
 }
 
 .help-text {
