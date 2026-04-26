@@ -26,4 +26,8 @@ dist-ssr
 # Documentation
 *.md
 !README.md
+!docs/**/*.md
+docs/.vitepress/dist
+docs/.vitepress/cache
+src/data/manifest.json
 
