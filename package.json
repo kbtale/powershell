@@ -4,6 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "commands": "node scripts/parse-commands.js",
+    "predev": "npm run commands",
+    "prebuild": "npm run commands",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
