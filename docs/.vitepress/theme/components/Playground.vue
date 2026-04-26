@@ -18,6 +18,25 @@ onMounted(() => {
     variables.value[param.name] = param.defaultValue
   })
 })
+
+const generatedCode = computed(() => {
+  let result = props.code || '';
+  
+  parsedParams.value.forEach(param => {
+    const value = variables.value[param.name];
+    
+    if (param.type.toLowerCase() === 'switch') {
+      const switchRegex = new RegExp(`(\\s*)\\$${param.name}\\b`, 'g');
+      result = result.replace(switchRegex, value ? '$1$' + param.name : '');
+    } else {
+      const valRegex = new RegExp(`(\\$${param.name}\\s*=\\s*)(['"]?)(.*?)\\2`, 'g');
+      const formattedValue = typeof value === 'string' ? `${value}` : value;
+      result = result.replace(valRegex, `$1$2${formattedValue}$2`);
+    }
+  });
+  
+  return result;
+})
 </script>
 
 <template>
@@ -78,7 +97,7 @@ onMounted(() => {
           <button class="copy-button">Copy</button>
         </div>
         <div class="code-block">
-          <pre><code>{{ code }}</code></pre>
+          <pre><code>{{ generatedCode }}</code></pre>
         </div>
       </div>
     </div>
