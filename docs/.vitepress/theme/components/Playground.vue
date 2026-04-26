@@ -1,18 +1,164 @@
 <script setup>
-defineProps(['title', 'description', 'code', 'params'])
+import { ref, computed, onMounted } from 'vue'
+
+const props = defineProps(['title', 'description', 'code', 'params'])
+
+// parse params string into reactive object
+const variables = ref({})
+const parsedParams = computed(() => {
+  try {
+    return JSON.parse(props.params || '[]')
+  } catch (e) {
+    return []
+  }
+})
+
+onMounted(() => {
+  parsedParams.value.forEach(param => {
+    variables.value[param.name] = param.defaultValue
+  })
+})
 </script>
 
 <template>
-  <div class="playground">
-    <p>Playground component for {{ title }}</p>
+  <div class="playground-container">
+    <div class="header">
+      <h1 class="title">{{ title }}</h1>
+      <p class="description">{{ description }}</p>
+    </div>
+
+    <div class="panel-grid">
+      <!-- customize panel -->
+      <div class="panel customize-panel">
+        <h2 class="panel-title">Customize</h2>
+        <div class="controls">
+          <div v-for="param in parsedParams" :key="param.name" class="control-group">
+            <label :for="param.name" class="label">
+              {{ param.name }}
+              <span class="type">[{{ param.type }}]</span>
+            </label>
+            <input 
+              :id="param.name"
+              v-model="variables[param.name]"
+              class="input-placeholder"
+            />
+            <p v-if="param.description" class="help-text">{{ param.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- code panel -->
+      <div class="panel code-panel">
+        <div class="code-header">
+          <h2 class="panel-title">Command</h2>
+          <button class="copy-button">Copy</button>
+        </div>
+        <div class="code-block">
+          <pre><code>{{ code }}</code></pre>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.playground {
+.playground-container {
   margin-top: 2rem;
-  padding: 1rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  color: var(--vp-c-text-2);
+  margin-bottom: 2rem;
+}
+
+.panel-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .panel-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.panel {
   border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: var(--vp-c-bg-soft);
+}
+
+.panel-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.control-group {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.type {
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.75rem;
+  color: var(--vp-c-brand);
+  margin-left: 0.5rem;
+}
+
+.input-placeholder {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+}
+
+.help-text {
+  font-size: 0.75rem;
+  color: var(--vp-c-text-2);
+  margin-top: 0.25rem;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.code-block {
+  background: var(--vp-code-block-bg);
+  padding: 1rem;
   border-radius: 8px;
+  overflow-x: auto;
+}
+
+.copy-button {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  transition: all 0.2s;
+}
+
+.copy-button:hover {
+  border-color: var(--vp-c-brand);
+  color: var(--vp-c-brand);
 }
 </style>
