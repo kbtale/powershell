@@ -39,5 +39,21 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/kbtale/powershell' }
     ]
+  },
+  
+  // generate dynamic metadata for search engines
+  async transformPageData(pageData) {
+    const params = pageData.params
+    if (params) {
+      pageData.frontmatter.title = params.title
+      pageData.frontmatter.description = params.description
+      
+      // add custom head tags
+      pageData.frontmatter.head = [
+        ['meta', { name: 'description', content: params.description }],
+        ['meta', { property: 'og:title', content: params.title }],
+        ['meta', { property: 'og:description', content: params.description }]
+      ]
+    }
   }
 })
