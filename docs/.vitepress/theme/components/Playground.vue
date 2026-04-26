@@ -127,12 +127,19 @@ const copyToClipboard = async () => {
 <style scoped>
 .playground-container {
   margin-top: 2rem;
+  animation: fade-in 0.5s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .title {
   font-size: 1.875rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+  letter-spacing: -0.025em;
 }
 
 .description {
