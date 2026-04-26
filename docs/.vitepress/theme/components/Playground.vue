@@ -37,6 +37,20 @@ const generatedCode = computed(() => {
   
   return result;
 })
+
+// handle clipboard copy
+const copied = ref(false)
+const copyToClipboard = async () => {
+  try {
+    await navigator.clipboard.writeText(generatedCode.value);
+    copied.value = true;
+    setTimeout(() => {
+      copied.value = false;
+    }, 2000);
+  } catch (err) {
+    console.error('failed to copy text:', err);
+  }
+}
 </script>
 
 <template>
@@ -94,7 +108,13 @@ const generatedCode = computed(() => {
       <div class="panel code-panel">
         <div class="code-header">
           <h2 class="panel-title">Command</h2>
-          <button class="copy-button">Copy</button>
+          <button 
+            @click="copyToClipboard" 
+            class="copy-button"
+            :class="{ 'is-copied': copied }"
+          >
+            {{ copied ? 'Copied!' : 'Copy' }}
+          </button>
         </div>
         <div class="code-block">
           <pre><code>{{ generatedCode }}</code></pre>
@@ -227,5 +247,11 @@ const generatedCode = computed(() => {
 .copy-button:hover {
   border-color: var(--vp-c-brand);
   color: var(--vp-c-brand);
+}
+
+.copy-button.is-copied {
+  border-color: #10b981;
+  color: #10b981;
+  background: #10b98110;
 }
 </style>
