@@ -1,7 +1,6 @@
-# {{ $params.title }}
-
-{{ $params.description }}
-
-```powershell
-{{ $params.code }}
-```
+<Playground 
+  :title="$params.title"
+  :description="$params.description"
+  :code="$params.code"
+  :params="$params.params"
+/>
