@@ -67,7 +67,12 @@ async function main() {
         const files = await getPs1Files(COMMANDS_DIR);
         const commands = await Promise.all(files.map(parseFile));
         
-        console.log(`Found ${commands.length} scripts`);
+        const outputDir = path.dirname(OUTPUT_FILE);
+        await fs.mkdir(outputDir, { recursive: true });
+
+        await fs.writeFile(OUTPUT_FILE, JSON.stringify(commands, null, 2));
+
+        console.log(`Found ${commands.length} scripts. Manifest generated at ${OUTPUT_FILE}`);
         
     } catch (err) {
         console.error('Parser Error:', err);
