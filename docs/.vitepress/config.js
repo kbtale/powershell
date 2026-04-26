@@ -38,6 +38,37 @@ export default defineConfig({
     sidebar: sidebarSteps,
     socialLinks: [
       { icon: 'github', link: 'https://github.com/kbtale/powershell' }
-    ]
+    ],
+    search: {
+      provider: 'local'
+    }
+  },
+  
+  // generate dynamic metadata and aeo structured data
+  async transformPageData(pageData) {
+    const params = pageData.params
+    if (params) {
+      const title = params.title
+      const description = params.description
+      
+      pageData.frontmatter.title = title
+      pageData.frontmatter.description = description
+      
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": title,
+        "description": description,
+        "programmingLanguage": "PowerShell",
+        "codeRepository": "https://github.com/kbtale/powershell"
+      }
+
+      pageData.frontmatter.head = [
+        ['meta', { name: 'description', content: description }],
+        ['meta', { property: 'og:title', content: title }],
+        ['meta', { property: 'og:description', content: description }],
+        ['script', { type: 'application/ld+json' }, JSON.stringify(schema)]
+      ]
+    }
   }
 })
