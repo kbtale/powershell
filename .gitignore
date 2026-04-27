@@ -25,6 +25,7 @@ dist-ssr
 
 # Documentation
 *.md
+.psdata/
 !README.md
 !docs/**/*.md
 docs/.vitepress/dist

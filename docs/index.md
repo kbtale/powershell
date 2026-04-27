@@ -4,12 +4,12 @@ layout: home
 hero:
   name: "PowerShell Docs"
   text: "Find. Tweak. Copy."
-  tagline: "An interactive directory of PowerShell commands."
+  tagline: "An interactive directory of PowerShell scripts."
   actions:
     - theme: brand
       text: Get Started
       link: /guide
     - theme: alt
-      text: View Commands
-      link: /commands/test-ping
+      text: View Scripts
+      link: /scripts/test-ping
 ---
