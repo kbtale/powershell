@@ -1,0 +1,58 @@
+<#
+.SYNOPSIS
+	List crypto rates
+.DESCRIPTION
+	This PowerShell script queries the current crypto exchange rates from cryptocompare.com and lists it in USD/EUR/CNY/JPY.
+.EXAMPLE
+	PS> ./list-crypto-rates.ps1
+
+	CRYPTOCURRENCY               US$                    ?UR                    CN?Y                    JPY
+	--------------               ---                    ---                    ---                    ---
+	1 Bitcoin (BTC) =            97309.81               94385.57               38800                  14798679.56
+	...
+.LINK
+	https://github.com/fleschutz/PowerShell
+.NOTES
+	Author: Markus Fleschutz | License: CC0
+.CATEGORY List
+#>
+
+function ListCryptoRate { param([string]$Symbol, [string]$Name)
+	$rates = (Invoke-WebRequest -URI "https://min-api.cryptocompare.com/data/price?fsym=$Symbol&tsyms=USD,EUR,CNY,JPY" -userAgent "curl" -useBasicParsing).Content | ConvertFrom-Json
+	New-Object PSObject -property @{ 'CRYPTOCURRENCY' = "1 $Name ($Symbol) ="; 'US$' = "$($rates.USD)"; '?' = "$($rates.EUR)"; 'CN?' = "$($rates.CNY)"; 'JP?' = "$($rates.JPY)" }
+}
+
+function ListCryptoRates { 
+	ListCryptoRate AVAX  "Avalanche"
+	ListCryptoRate BNB   "Binance Coin"
+	ListCryptoRate BTC   "Bitcoin"
+	ListCryptoRate BCH   "Bitcoin Cash"
+	ListCryptoRate BUSD  "Binance USD"
+	ListCryptoRate ADA   "Cardano"
+	ListCryptoRate LINK  "Chainlink"
+	ListCryptoRate DOGE  "Dogecoin"
+	ListCryptoRate GALA  "Gala"
+	ListCryptoRate ETH   "Ethereum"
+	ListCryptoRate LTC   "Litecoin"
+	ListCryptoRate TRUMP "Official Trump"
+	ListCryptoRate DOT   "Polkadot"
+	ListCryptoRate MATIC "Polygon"
+	ListCryptoRate SOL   "Solana"
+	ListCryptoRate XLM   "Stellar"
+	ListCryptoRate SUI   "Sui"
+	ListCryptoRate LUNA  "Terra"
+	ListCryptoRate USDT  "Tether"
+	ListCryptoRate WBTC  "Wrapped Bitcoin"
+	ListCryptoRate XRP   "XRP"
+	ListCryptoRate UNI   "Uniswap"
+	ListCryptoRate USDC  "USD Coin"
+}
+
+try {
+	ListCryptoRates | Format-Table -property @{e='CRYPTOCURRENCY';width=28},'US$','?','CN?','JP?'
+	Write-Host "(by https://www.cryptocompare.com ? Crypto is volatile and unregulated ? Capital at risk ? Taxes may apply)"
+	exit 0 # success
+} catch {
+	"?? ERROR: $($Error[0]) (script line $($_.InvocationInfo.ScriptLineNumber))"
+	exit 1
+}

@@ -5,6 +5,7 @@ const props = defineProps(['title', 'description', 'code', 'params', 'requiremen
 
 // parse params string into reactive object
 const variables = ref({})
+
 const parsedParams = computed(() => {
   try {
     return JSON.parse(props.params || '[]')
@@ -21,6 +22,7 @@ const parsedRequirements = computed(() => {
   }
 })
 
+// Initialize variables
 onMounted(() => {
   parsedParams.value.forEach(param => {
     variables.value[param.name] = param.defaultValue
@@ -32,7 +34,8 @@ const generatedCode = computed(() => {
   
   parsedParams.value.forEach(param => {
     const value = variables.value[param.name];
-    
+    if (value === undefined || value === null) return;
+
     if (param.type.toLowerCase() === 'switch') {
       const switchRegex = new RegExp(`(\\s*)\\$${param.name}\\b`, 'g');
       result = result.replace(switchRegex, value ? '$1$' + param.name : '');
@@ -265,10 +268,8 @@ const copyToClipboard = async () => {
   line-height: 1.7;
   overflow-x: auto;
   color: var(--vp-c-text-1);
-}
-
-.code-pre code {
-  font-family: var(--vp-font-family-mono);
+  outline: none;
+  min-height: 100px;
 }
 
 /* -- customize section -- */

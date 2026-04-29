@@ -1,0 +1,23 @@
+<#
+.SYNOPSIS
+	Enables IPv6
+.DESCRIPTION
+	This PowerShell script enables IPv6 on all network interfaces of the local computer.
+.EXAMPLE
+	PS> ./enable-ipv6.ps1
+	? IPv6 is enabled now.
+.LINK
+	https://github.com/fleschutz/PowerShell
+.NOTES
+	Author: Markus Fleschutz | License: CC0
+.CATEGORY Enable
+#>
+
+try {
+	Enable-NetAdapterBinding -Name '*' -ComponentID 'ms_tcpip6'
+	"? IPv6 is enabled now."
+	exit 0 # success
+} catch {
+	"?? ERROR: $($Error[0]) (script line $($_.InvocationInfo.ScriptLineNumber))"
+	exit 1
+}
