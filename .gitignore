@@ -32,3 +32,4 @@ docs/.vitepress/dist
 docs/.vitepress/cache
 src/data/manifest.json
 
+*.txt
