@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "commands": "node scripts/parse-commands.js",
-    "predev": "npm run commands",
-    "prebuild": "npm run commands",
+    "generate-manifest": "node scripts/parse-commands.js",
+    "predev": "npm run generate-manifest",
+    "prebuild": "npm run generate-manifest",
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
     "preview": "vitepress preview docs"

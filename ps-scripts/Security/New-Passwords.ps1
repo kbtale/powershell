@@ -1,0 +1,47 @@
+<#
+.SYNOPSIS
+	Generates new passwords
+.DESCRIPTION
+	This PowerShell script generates a table of secure passwords and writes them to the console (for
+	the user to select one).
+	NOTE: The NIST and CISA recommendation of 2024 for very strong passwords is at least 16 characters!
+.PARAMETER passwordLength
+	Specifies the length of the password (default: 16)
+.PARAMETER columns
+	Specifies the number of columns (default: 6)
+.PARAMETER rows
+	Specifies the number of rows (default: 27)
+.EXAMPLE
+	PS> ./new-passwords.ps1
+	P6zYR't)/TrfEMJa    %.]wrp@&w;`Z`Fv$    =q<p_D{J@_WdhLS3    /NMj/R+]su`8D:Fg    [nIR1X"_14W3:Z;K
+	9n*w$"#ULlZyyuC:    Z5Otl4mOy]hQ[8zK    .QxJQBHdLtd,Pwnp    :`/M508&!X{D7Ox5    o/kHzwg8khHvMb|#
+	zO:B,FsAwt`Jf?V<    ZyU>8},Bvn/)Moqg    ;Kz|I[tG$t"3kj6x    <.<JM0czDuI<8jq)    #v/;BXq|%.;A|vU,
+	...
+.LINK
+	https://github.com/fleschutz/PowerShell
+.NOTES
+	Author: Markus Fleschutz | License: CC0
+.CATEGORY New
+#>
+
+param([int]$passwordLength = 16, [int]$columns = 6, [int]$rows = 27)
+
+try {
+	[int]$minCharCode = 33
+	[int]$maxCharCode = 126
+	$generator = New-Object System.Random
+	for ([int]$row = 0; $row -lt $rows; $row++) {
+		$line = ""
+		for ([int]$col = 0; $col -lt $columns; $col++) {
+			for ([int]$i = 0; $i -lt $passwordLength; $i++) {
+				$line += [char]$generator.next($minCharCode, $maxCharCode)
+			}
+			$line += "    "
+		}
+		Write-Output $line
+	}
+	exit 0 # success
+} catch {
+	"?? ERROR: $($Error[0]) (script line $($_.InvocationInfo.ScriptLineNumber))"
+	exit 1
+}

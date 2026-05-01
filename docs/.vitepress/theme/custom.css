@@ -1,0 +1,25 @@
+/**
+ * VitePress Custom Theme Overrides
+ * Standardizing the documentation platform with premium, edge-to-edge layout.
+ */
+
+:root {
+  /* Increase the overall layout ceiling */
+  --vp-layout-max-width: 100% !important;
+}
+
+/* Allow the documentation content to breathe and fill the screen */
+.VPDoc .container {
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+
+.VPDoc .content {
+    max-width: 100% !important;
+    padding: 0 32px !important;
+}
+
+/* Ensure the playground component utilizes the available width */
+.playground-wrapper {
+  width: 100%;
+}

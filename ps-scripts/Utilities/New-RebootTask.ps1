@@ -1,0 +1,112 @@
+<#
+.SYNOPSIS
+	Create a timed task to reboot
+.DESCRIPTION
+	This PowerShell script creates a timed task to reboot the local computer.
+.EXAMPLE
+	./new-reboot-task.ps1
+.LINK
+        https://github.com/fleschutz/PowerShell
+.NOTES
+        Author: Markus Fleschutz | License: CC0
+.CATEGORY New
+#>
+
+#Requires -RunAsAdministrator
+
+# parameter
+$TaskName = "Timed Reboot"
+
+Add-Type -AssemblyName System.Windows.Forms
+
+# main menu
+$font = New-Object System.Drawing.Font("Arial", 11)
+$mainForm = New-Object System.Windows.Forms.Form
+$mainForm.Text = "Plan the next reboot"
+$mainForm.Font = $font
+$mainForm.ForeColor = "Black"
+$mainForm.BackColor = "White"
+$mainForm.Width = 300
+$mainForm.Height = 200
+$mainForm.StartPosition = "CenterScreen"
+$mainForm.MaximizeBox = $False
+
+# create description label
+$DescriptLabel = New-Object System.Windows.Forms.Label
+$DescriptLabel.Text = "When to reboot the computer?"
+$DescriptLabel.Location = "15, 10"
+$DescriptLabel.Height = 22
+$DescriptLabel.Width = 280
+$mainForm.Controls.Add($DescriptLabel)
+
+# create DatePicker label
+$datePickerLabel = New-Object System.Windows.Forms.Label
+$datePickerLabel.Text = "Date"
+$datePickerLabel.Location = "15, 45"
+$datePickerLabel.Height = 22
+$datePickerLabel.Width = 90
+$mainForm.Controls.Add($datePickerLabel)
+
+# create TimePicker label
+$TimePickerLabel = New-Object System.Windows.Forms.Label
+$TimePickerLabel.Text = "Time"
+$TimePickerLabel.Location = "15, 80"
+$TimePickerLabel.Height = 22
+$TimePickerLabel.Width = 90
+$mainForm.Controls.Add($TimePickerLabel)
+
+# create DatePicker input field
+$datePicker = New-Object System.Windows.Forms.DateTimePicker
+$datePicker.Location = "110, 42"
+$datePicker.Width = "150"
+$datePicker.Format = [windows.forms.datetimepickerFormat]::custom
+$datePicker.CustomFormat = "dd/MM/yyyy"
+$mainForm.Controls.Add($datePicker)
+
+# create TimePicker input field
+$TimePicker = New-Object System.Windows.Forms.DateTimePicker
+$TimePicker.Location = "110, 77"
+$TimePicker.Width = "150"
+$TimePicker.Format = [windows.forms.datetimepickerFormat]::custom
+$TimePicker.CustomFormat = "HH:mm"
+$TimePicker.ShowUpDown = $TRUE
+$mainForm.Controls.Add($TimePicker)
+
+# create OK button
+$okButton = New-Object System.Windows.Forms.Button
+$okButton.Location = "15, 130"
+$okButton.ForeColor = "Black"
+$okButton.BackColor = "White"
+$okButton.Text = "OK"
+$okButton.add_Click({$mainForm.DialogResult = "OK";$mainForm.close()})
+$mainForm.Controls.Add($okButton)
+
+# show window
+[void] $mainForm.ShowDialog()
+
+# Skript abbrechen, wenn Fenster geschlossen wird
+If ($mainForm.DialogResult -eq "Cancel") {Break}
+
+# Datum und Uhrzeit aus Abfrage f?r Task aufbereiten
+$TaskDatetrigger = Get-Date -Date $datePicker.Value.Date -Hour $TimePicker.Value.TimeOfDay.Hours -Minute $TimePicker.Value.TimeOfDay.Minutes
+
+# Erstelle Task oder passe vorhanden Task an
+
+# TaskTrigger Zeit setzen
+$TaskTrigger = New-ScheduledTaskTrigger -At $TaskDatetrigger -Once
+
+If ((Get-ScheduledTask -TaskName $Taskname -ErrorAction SilentlyContinue).TaskName -eq $TaskName) 
+    {# Setzt den neue Tasktrigger
+    Set-ScheduledTask -TaskName $Taskname -Trigger $TaskTrigger
+    }
+Else
+    {# Erstellt Neustart Task, da keiner vorhanden ist
+    $TaskAction = New-ScheduledTaskAction -Execute "shutdown.exe" -Argument "/r /f /t 5"
+    $TaskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 00:15:00
+    $TaskSettings.StartWhenAvailable = $false
+    $TaskPrincipal = New-ScheduledTaskPrincipal -UserId $(Get-WMIObject -class Win32_ComputerSystem | select UserName).username -RunLevel Highest -LogonType Interactive
+    Register-ScheduledTask -Action $TaskAction -Trigger $TaskTrigger -Settings $TaskSettings -Principal $TaskPrincipal -TaskName $TaskName -Description "F?hrt einen Neustart des Computers zu einer festgelegten Zeit aus"
+    }
+
+# Pruefe Task ob dieser deaktiviert ist
+If ((Get-ScheduledTask -TaskName $Taskname).State -eq "Disabled") {Enable-ScheduledTask -TaskName $TaskName}

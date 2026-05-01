@@ -1,0 +1,68 @@
+<#
+.SYNOPSIS
+	Lists the TIOBE index
+.DESCRIPTION
+	This PowerShell script lists the TIOBE index of top programming languages.
+.EXAMPLE
+	PS> ./list-tiobe-index.ps1
+.LINK
+	https://github.com/fleschutz/PowerShell
+.NOTES
+	Author: Markus Fleschutz | License: CC0
+.CATEGORY List
+#>
+
+function WriteBar { param([string]$text, [float]$value, [float]$max, [float]$change)
+	$num = ($value * 100.0) / $max
+	while ($num -ge 1.0) {
+		Write-Host "?" -noNewline
+		$num -= 1.0
+	}
+	if ($num -ge 0.875) {
+		Write-Host "?" -noNewline
+	} elseif ($num -ge 0.75) {
+		Write-Host "?" -noNewline
+	} elseif ($num -ge 0.625) {
+		Write-Host "?" -noNewline
+	} elseif ($num -ge 0.5) {
+		Write-Host "?" -noNewline
+	} elseif ($num -ge 0.375) {
+		Write-Host "?" -noNewline
+	} elseif ($num -ge 0.25) {
+		Write-Host "?" -noNewline
+	} elseif ($num -ge 0.125) {
+		Write-Host "?" -noNewline
+	}
+	Write-Host " $text $($value)%" -noNewline
+	if ($change -ge 0.0) {
+		Write-Host -foregroundColor green " +$($change)%"
+	} else {
+		Write-Host -foregroundColor red " $($change)%"
+	}
+}
+
+try {
+	Write-Host ""
+	Write-Host ""
+	Write-Host "`t`t`t`tTIOBE Index for November 2025"
+	Write-Host "`t`t`t`t============================="
+	Write-Host ""
+
+	$table = Import-CSV "$PSScriptRoot/data/TIOBE-index.csv"
+	foreach($row in $table) {
+		[string]$rank = "{0,2}" -f $row.RANK
+		[string]$language = "{0,-20}" -f $row.LANGUAGE
+		[float]$popularity = $row.POPULARITY
+		[float]$change = $row.CHANGE
+		Write-Host "$($rank). $language" -noNewline
+		WriteBar "" $popularity 30.0 $change
+	}
+	Write-Host ""
+	Write-Host "Source: " -noNewline
+	Write-Host "https://tiobe.com/tiobe-index/" -foregroundColor blue -noNewline
+	Write-Host " (<Ctrl> <Click> to open the link in your browser)"
+	exit 0 # success
+} catch {
+	"?? ERROR: $($Error[0]) (script line $($_.InvocationInfo.ScriptLineNumber))"
+	exit 1
+}
