@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 	Citrix: Adds a machine to a catalog
 .DESCRIPTION
@@ -20,7 +20,6 @@ param(
 )
 
 try {
-	# Note: Citrix cmdlets usually require the Citrix.Broker.Admin.V2 module or similar
 	if (-not (Get-Module -ListAvailable Citrix.Broker.Admin.V2)) {
 		throw "Citrix Broker PowerShell module not found."
 	}
@@ -28,7 +27,8 @@ try {
 	
 	New-BrokerMachine -MachineName $MachineName -DesktopGroup $CatalogName -ErrorAction Stop
 	Write-Output "Successfully added machine '$MachineName' to catalog '$CatalogName'."
-} catch {
+}
+catch {
 	Write-Error $_
 	exit 1
 }
