@@ -2,7 +2,7 @@
 .SYNOPSIS
 	Citrix: Gets application entitlement policy rule metadata
 .DESCRIPTION
-	Retrieves metadata associated with a specific application entitlement policy rule.
+	Retrieves metadata associated with a specific Citrix application entitlement policy rule.
 .PARAMETER Name
 	The name of the policy rule.
 .EXAMPLE

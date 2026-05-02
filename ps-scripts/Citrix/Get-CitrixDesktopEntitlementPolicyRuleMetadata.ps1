@@ -2,7 +2,7 @@
 .SYNOPSIS
 	Citrix: Gets desktop entitlement policy rule metadata
 .DESCRIPTION
-	Retrieves metadata associated with a specific desktop entitlement policy rule.
+	Retrieves metadata associated with a specific Citrix desktop entitlement policy rule.
 .PARAMETER Name
 	The name of the policy rule.
 .EXAMPLE

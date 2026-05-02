@@ -2,7 +2,7 @@
 .SYNOPSIS
 	Citrix: Gets desktop assignment policy rule metadata
 .DESCRIPTION
-	Retrieves metadata associated with a specific desktop assignment policy rule.
+	Retrieves metadata associated with a specific Citrix desktop assignment policy rule.
 .PARAMETER Name
 	The name of the policy rule.
 .EXAMPLE

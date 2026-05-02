@@ -16,8 +16,9 @@ param(
 
 try {
 	Import-Module Citrix.Broker.Admin.V2 -ErrorAction Stop
-	Update-BrokerDesktopGroup -Name $GroupName -ErrorAction Stop
-	Write-Output "Policy update initiated for desktop group '$GroupName'."
+	$timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+	Set-BrokerDesktopGroupMetadata -Name $GroupName -Name "LastPolicyUpdate" -Value $timestamp -ErrorAction Stop
+	Write-Output "Policy update signal sent to desktop group '$GroupName' (Timestamp: $timestamp)."
 } catch {
 	Write-Error $_
 	exit 1

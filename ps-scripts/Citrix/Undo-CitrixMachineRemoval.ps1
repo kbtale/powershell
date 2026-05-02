@@ -11,13 +11,16 @@
 #>
 param(
 	[Parameter(Mandatory = $true)]
-	[string]$MachineName
+	[string]$MachineName,
+
+	[Parameter(Mandatory = $true)]
+	[string]$CatalogName
 )
 
 try {
 	Import-Module Citrix.Broker.Admin.V2 -ErrorAction Stop
-	Write-Warning "Attempting to re-add machine '$MachineName' as recovery action."
-	Write-Output "Recovery action for '$MachineName' initiated. Please ensure it is re-added to its catalog."
+	New-BrokerMachine -MachineName $MachineName -CatalogName $CatalogName -ErrorAction Stop
+	Write-Output "Successfully recovered machine '$MachineName' into catalog '$CatalogName'."
 } catch {
 	Write-Error $_
 	exit 1

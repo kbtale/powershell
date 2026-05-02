@@ -16,13 +16,26 @@ param(
 	[string]$GroupName,
 
 	[Parameter(Mandatory = $true)]
+	[ValidateSet('Reboot', 'EnableMaintenanceMode', 'DisableMaintenanceMode')]
 	[string]$Action
 )
 
 try {
 	Import-Module Citrix.Broker.Admin.V2 -ErrorAction Stop
-	Update-BrokerDesktopGroup -Name $GroupName -ErrorAction Stop
-	Write-Output "Update action triggered for desktop group '$GroupName'."
+	switch ($Action) {
+		'Reboot' {
+			New-BrokerRebootCycle -DesktopGroupName $GroupName -ErrorAction Stop
+			Write-Output "Reboot cycle started for desktop group '$GroupName'."
+		}
+		'EnableMaintenanceMode' {
+			Set-BrokerDesktopGroup -Name $GroupName -InMaintenanceMode $true -ErrorAction Stop
+			Write-Output "Maintenance mode enabled for desktop group '$GroupName'."
+		}
+		'DisableMaintenanceMode' {
+			Set-BrokerDesktopGroup -Name $GroupName -InMaintenanceMode $false -ErrorAction Stop
+			Write-Output "Maintenance mode disabled for desktop group '$GroupName'."
+		}
+	}
 } catch {
 	Write-Error $_
 	exit 1
