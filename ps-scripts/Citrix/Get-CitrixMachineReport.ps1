@@ -1,8 +1,8 @@
 ﻿<#
 .SYNOPSIS
-	Citrix: Gets a report of machines
+	Citrix: Gets machine report
 .DESCRIPTION
-	Retrieves a summarized list of machines in the Citrix site.
+	Retrieves a summarized report of all machines in the Citrix site.
 .EXAMPLE
 	PS> ./Get-CitrixMachineReport.ps1
 .CATEGORY Citrix
@@ -11,8 +11,8 @@ param()
 
 try {
 	Import-Module Citrix.Broker.Admin.V2 -ErrorAction Stop
-	$machines = Get-BrokerMachine -ErrorAction Stop | Select-Object MachineName, DesktopGroupName, RegistrationState, PowerState, InMaintenanceMode
-	Write-Output $machines
+	$report = Get-BrokerMachine -ErrorAction Stop | Select-Object MachineName, CatalogName, DesktopGroupName, RegistrationState, PowerState
+	Write-Output $report
 } catch {
 	Write-Error $_
 	exit 1

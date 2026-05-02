@@ -1,8 +1,8 @@
 ﻿<#
 .SYNOPSIS
-	Citrix: Gets a report of Citrix services
+	Citrix: Gets service report
 .DESCRIPTION
-	Retrieves a summarized status report of all Citrix services.
+	Retrieves a summarized report of all Citrix services and their status.
 .EXAMPLE
 	PS> ./Get-CitrixServiceReport.ps1
 .CATEGORY Citrix
@@ -11,8 +11,8 @@ param()
 
 try {
 	Import-Module Citrix.Configuration.Admin.V2 -ErrorAction Stop
-	$services = Get-ConfigService -ErrorAction Stop | Select-Object ServiceType, ServiceInstanceId, Version
-	Write-Output $services
+	$report = Get-ConfigServiceInstance -ErrorAction Stop | Select-Object ServiceType, ServiceGroupUid, Address
+	Write-Output $report
 } catch {
 	Write-Error $_
 	exit 1

@@ -1,8 +1,8 @@
 ﻿<#
 .SYNOPSIS
-	Citrix: Gets a report of roles
+	Citrix: Gets role report
 .DESCRIPTION
-	Retrieves a summarized list of Citrix administrator roles.
+	Retrieves a summarized report of all administrative roles in the Citrix site.
 .EXAMPLE
 	PS> ./Get-CitrixRoleReport.ps1
 .CATEGORY Citrix
@@ -11,8 +11,8 @@ param()
 
 try {
 	Import-Module Citrix.DelegatedAdmin.Admin.V1 -ErrorAction Stop
-	$roles = Get-AdminRole -ErrorAction Stop | Select-Object Name, Description, BuiltIn
-	Write-Output $roles
+	$report = Get-AdminRole -ErrorAction Stop | Select-Object Name, Description, IsBuiltIn
+	Write-Output $report
 } catch {
 	Write-Error $_
 	exit 1

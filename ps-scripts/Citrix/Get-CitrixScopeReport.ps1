@@ -1,8 +1,8 @@
 ﻿<#
 .SYNOPSIS
-	Citrix: Gets a report of scopes
+	Citrix: Gets scope report
 .DESCRIPTION
-	Retrieves a summarized list of Citrix administrative scopes.
+	Retrieves a summarized report of all administrative scopes in the Citrix site.
 .EXAMPLE
 	PS> ./Get-CitrixScopeReport.ps1
 .CATEGORY Citrix
@@ -11,8 +11,8 @@ param()
 
 try {
 	Import-Module Citrix.DelegatedAdmin.Admin.V1 -ErrorAction Stop
-	$scopes = Get-AdminScope -ErrorAction Stop | Select-Object Name, Description, BuiltIn
-	Write-Output $scopes
+	$report = Get-AdminScope -ErrorAction Stop | Select-Object Name, Description, IsBuiltIn
+	Write-Output $report
 } catch {
 	Write-Error $_
 	exit 1

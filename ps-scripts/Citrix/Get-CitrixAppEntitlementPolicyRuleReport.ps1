@@ -1,8 +1,8 @@
 ﻿<#
 .SYNOPSIS
-	Citrix: Gets a report of application entitlement policy rules
+	Citrix: Gets application entitlement policy rule report
 .DESCRIPTION
-	Retrieves a summarized list of all application entitlement policy rules in the Citrix site.
+	Retrieves a summarized report of all application entitlement policy rules.
 .EXAMPLE
 	PS> ./Get-CitrixAppEntitlementPolicyRuleReport.ps1
 .CATEGORY Citrix
@@ -11,8 +11,8 @@ param()
 
 try {
 	Import-Module Citrix.Broker.Admin.V2 -ErrorAction Stop
-	$rules = Get-BrokerAppEntitlementPolicyRule -ErrorAction Stop | Select-Object Name, Enabled, DesktopGroupName, IncludedUsers
-	Write-Output $rules
+	$report = Get-BrokerAppEntitlementPolicyRule -ErrorAction Stop | Select-Object Name, Enabled, DesktopGroupUid
+	Write-Output $report
 } catch {
 	Write-Error $_
 	exit 1
