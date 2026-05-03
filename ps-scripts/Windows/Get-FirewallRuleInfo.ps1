@@ -38,27 +38,22 @@ Param
     [pscredential]$Credential
 )
 
-Process
-{
-    try
-    {
+Process {
+    try {
         $session = $null
         $ruleParams = @{
             'ErrorAction' = 'Stop'
         }
 
-        if ($EnabledOnly)
-        {
+        if ($EnabledOnly) {
             $ruleParams.Add('Enabled', 'True')
         }
 
-        if ($ComputerName -ne $env:COMPUTERNAME)
-        {
+        if ($ComputerName -ne $env:COMPUTERNAME) {
             $sessionParams = @{
                 'ComputerName' = $ComputerName
             }
-            if ($null -ne $Credential)
-            {
+            if ($null -ne $Credential) {
                 $sessionParams.Add('Credential', $Credential)
             }
             $session = New-CimSession @sessionParams
@@ -67,8 +62,7 @@ Process
 
         $rules = Get-NetFirewallRule @ruleParams | Where-Object { $_.DisplayName -like $Name -or $_.Name -like $Name }
 
-        $results = foreach ($rule in $rules)
-        {
+        $results = foreach ($rule in $rules) {
             # Get port details (requires Get-NetFirewallPortFilter)
             $ports = $rule | Get-NetFirewallPortFilter @ruleParams -ErrorAction SilentlyContinue
             
@@ -87,15 +81,13 @@ Process
 
         Write-Output ($results | Sort-Object DisplayName)
     }
-    catch
-    {
+    catch {
         throw
     }
-    finally
-    {
-        if ($null -ne $session)
-        {
+    finally {
+        if ($null -ne $session) {
             Remove-CimSession $session
         }
     }
+}
 }

@@ -50,10 +50,8 @@ Param
     [string]$Status
 )
 
-Process
-{
-    try
-    {
+Process {
+    try {
         $setParams = @{
             'Name'         = $Name
             'ComputerName' = $ComputerName
@@ -61,28 +59,23 @@ Process
             'ErrorAction'  = 'Stop'
         }
 
-        if ($PSBoundParameters.ContainsKey('DisplayName'))
-        {
+        if ($PSBoundParameters.ContainsKey('DisplayName')) {
             $setParams.Add('DisplayName', $DisplayName)
         }
 
-        if ($PSBoundParameters.ContainsKey('Description'))
-        {
+        if ($PSBoundParameters.ContainsKey('Description')) {
             $setParams.Add('Description', $Description)
         }
 
-        if ($PSBoundParameters.ContainsKey('StartupType'))
-        {
+        if ($PSBoundParameters.ContainsKey('StartupType')) {
             $setParams.Add('StartupType', $StartupType)
         }
 
-        if ($PSBoundParameters.ContainsKey('Status'))
-        {
+        if ($PSBoundParameters.ContainsKey('Status')) {
             $setParams.Add('Status', $Status)
         }
 
-        if ($setParams.Count -gt 3)
-        {
+        if ($setParams.Count -gt 3) {
             Set-Service @setParams
         }
 
@@ -98,8 +91,7 @@ Process
 
         Write-Output $result
     }
-    catch
-    {
+    catch {
         throw
     }
 }

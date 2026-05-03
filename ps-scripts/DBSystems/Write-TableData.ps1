@@ -90,7 +90,7 @@ Param(
     [string]$CsvDelimiter = ';',
 
     [Parameter(ParameterSetName = "ByCsv")] 
-    [ValidateSet('Unicode','UTF7','UTF8','ASCII','UTF32','BigEndianUnicode','Default','OEM')]
+    [ValidateSet('Unicode', 'UTF7', 'UTF8', 'ASCII', 'UTF32', 'BigEndianUnicode', 'Default', 'OEM')]
     [string]$FileEncoding = 'UTF8',
 
     [Parameter(ParameterSetName = "ByString")]   
@@ -102,13 +102,13 @@ Import-Module SQLServer
 
 try {
     [hashtable]$writeArgs = @{
-        'ErrorAction' = 'Stop'
-        'ServerInstance' = $ServerInstance
+        'ErrorAction'       = 'Stop'
+        'ServerInstance'    = $ServerInstance
         'ConnectionTimeout' = $ConnectionTimeout
-        'DatabaseName' = $DatabaseName
-        'TableName' = $TableName
-        'SchemaName' = $SchemaName
-        'Force' = $true
+        'DatabaseName'      = $DatabaseName
+        'TableName'         = $TableName
+        'SchemaName'        = $SchemaName
+        'Force'             = $true
     }              
     if ($Timeout -gt 0) {
         $writeArgs.Add('Timeout', $Timeout)
@@ -132,7 +132,8 @@ try {
         
         [PSCustomObject]$newRow | Write-SqlTableData @writeArgs
         $rowCount = 1
-    } else {
+    }
+    else {
         if (-not (Test-Path -Path $ValuesCsvFile)) {
             throw "CSV file not found: $ValuesCsvFile"
         }
@@ -147,14 +148,14 @@ try {
 
     # Return the inserted rows (or recent rows) as confirmation
     [hashtable]$readArgs = @{
-        'ErrorAction' = 'Stop'
-        'ServerInstance' = $ServerInstance
+        'ErrorAction'       = 'Stop'
+        'ServerInstance'    = $ServerInstance
         'ConnectionTimeout' = $ConnectionTimeout
-        'DatabaseName' = $DatabaseName
-        'TableName' = $TableName
-        'SchemaName' = $SchemaName
-        'ColumnOrderType' = 'DESC'
-        'TopN' = $rowCount
+        'DatabaseName'      = $DatabaseName
+        'TableName'         = $TableName
+        'SchemaName'        = $SchemaName
+        'ColumnOrderType'   = 'DESC'
+        'TopN'              = $rowCount
     }
     if ($null -ne $ServerCredential) {
         $readArgs.Add('Credential', $ServerCredential)
@@ -165,6 +166,7 @@ try {
 
     $result = Read-SqlTableData @readArgs
     Write-Output $result
-} catch {
+}
+catch {
     throw
 }

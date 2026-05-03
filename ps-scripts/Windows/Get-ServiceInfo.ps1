@@ -41,38 +41,31 @@ Param
     [string[]]$Properties = @('Name', 'DisplayName', 'Status', 'StartType', 'CanStop', 'CanPauseAndContinue')
 )
 
-Process
-{
-    try
-    {
+Process {
+    try {
         $getServiceParams = @{
             'ErrorAction' = 'Stop'
         }
 
-        if (-not [string]::IsNullOrWhiteSpace($ComputerName))
-        {
+        if (-not [string]::IsNullOrWhiteSpace($ComputerName)) {
             $getServiceParams.Add('ComputerName', $ComputerName)
         }
 
-        if (-not [string]::IsNullOrWhiteSpace($Name))
-        {
+        if (-not [string]::IsNullOrWhiteSpace($Name)) {
             $getServiceParams.Add('Name', $Name)
         }
-        elseif (-not [string]::IsNullOrWhiteSpace($DisplayName))
-        {
+        elseif (-not [string]::IsNullOrWhiteSpace($DisplayName)) {
             $getServiceParams.Add('DisplayName', $DisplayName)
         }
 
         $services = Get-Service @getServiceParams
 
-        if ($null -ne $services)
-        {
+        if ($null -ne $services) {
             $result = $services | Select-Object -Property $Properties
             Write-Output $result
         }
     }
-    catch
-    {
+    catch {
         throw
     }
 }

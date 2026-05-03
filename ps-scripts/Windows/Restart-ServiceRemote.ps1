@@ -33,38 +33,34 @@ Param
     [switch]$Force
 )
 
-    Process
-    {
-        try
-        {
-            $serviceParams = @{
-                'Name'         = $Name
-                'ComputerName' = $ComputerName
-                'ErrorAction'  = 'Stop'
-            }
+Process {
+    try {
+        $serviceParams = @{
+            'Name'         = $Name
+            'ComputerName' = $ComputerName
+            'ErrorAction'  = 'Stop'
+        }
 
-            if ($Force)
-            {
-                $serviceParams.Add('Force', $true)
-            }
+        if ($Force) {
+            $serviceParams.Add('Force', $true)
+        }
 
-            Write-Verbose "Attempting to restart service '$Name' on '$ComputerName'..."
-            Restart-Service @serviceParams
+        Write-Verbose "Attempting to restart service '$Name' on '$ComputerName'..."
+        Restart-Service @serviceParams
 
-            Start-Sleep -Seconds 2
-            $status = Get-Service -Name $Name -ComputerName $ComputerName -ErrorAction Stop
+        Start-Sleep -Seconds 2
+        $status = Get-Service -Name $Name -ComputerName $ComputerName -ErrorAction Stop
             
-            $result = [PSCustomObject]@{
-                ServiceName  = $Name
-                ComputerName = $ComputerName
-                Status       = $status.Status
-                Timestamp    = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            }
+        $result = [PSCustomObject]@{
+            ServiceName  = $Name
+            ComputerName = $ComputerName
+            Status       = $status.Status
+            Timestamp    = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        }
 
-            Write-Output $result
-        }
-        catch
-        {
-            throw
-        }
+        Write-Output $result
     }
+    catch {
+        throw
+    }
+}

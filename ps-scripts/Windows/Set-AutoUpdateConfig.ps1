@@ -39,10 +39,8 @@ Param
     [pscredential]$Credential
 )
 
-Process
-{
-    try
-    {
+Process {
+    try {
         $optionMap = @{
             'Default'      = 0
             'Disabled'     = 1
@@ -58,26 +56,20 @@ Process
             $basePath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
             $auPath = "$basePath\AU"
 
-            if ($OptionValue -eq 0)
-            {
-                if (Test-Path $basePath)
-                {
+            if ($OptionValue -eq 0) {
+                if (Test-Path $basePath) {
                     Remove-Item -Path $basePath -Recurse -Force
                 }
             }
-            else
-            {
-                if (-not (Test-Path $auPath))
-                {
+            else {
+                if (-not (Test-Path $auPath)) {
                     New-Item -Path $auPath -Force | Out-Null
                 }
 
-                if ($OptionValue -eq 1)
-                {
+                if ($OptionValue -eq 1) {
                     Set-ItemProperty -Path $auPath -Name "NoAutoUpdate" -Value 1 -Force
                 }
-                else
-                {
+                else {
                     Set-ItemProperty -Path $auPath -Name "NoAutoUpdate" -Value 0 -Force
                     Set-ItemProperty -Path $auPath -Name "AUOptions" -Value $OptionValue -Force
                     # Default schedule: Daily at 3 AM
@@ -87,23 +79,20 @@ Process
             }
         }
 
-        if ($ComputerName -ne $env:COMPUTERNAME)
-        {
+        if ($ComputerName -ne $env:COMPUTERNAME) {
             $invokeParams = @{
                 'ComputerName' = $ComputerName
                 'ScriptBlock'  = $scriptBlock
                 'ArgumentList' = $val
                 'ErrorAction'  = 'Stop'
             }
-            if ($null -ne $Credential)
-            {
+            if ($null -ne $Credential) {
                 $invokeParams.Add('Credential', $Credential)
             }
 
             Invoke-Command @invokeParams
         }
-        else
-        {
+        else {
             &$scriptBlock -OptionValue $val
         }
 
@@ -117,8 +106,7 @@ Process
 
         Write-Output $result
     }
-    catch
-    {
+    catch {
         throw
     }
 }
