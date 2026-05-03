@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 	Azure: Sets or updates a Key Vault secret
 .DESCRIPTION
@@ -28,8 +28,10 @@ try {
 	Import-Module Az.KeyVault -ErrorAction Stop
 	$secureSecret = ConvertTo-SecureString -String $SecretValue -AsPlainText -Force
 	$secret = Set-AzKeyVaultSecret -VaultName $VaultName -Name $Name -SecretValue $secureSecret -ErrorAction Stop
-	Write-Output "Successfully set secret '$Name' in vault '$VaultName'."
-} catch {
+	
+	rite-Output "Successfully set secret '$Name' in vault '$VaultName'."
+}
+catch {
 	Write-Error $_
 	exit 1
 }

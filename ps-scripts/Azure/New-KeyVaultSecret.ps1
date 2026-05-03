@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 	Azure: Creates or updates a Key Vault secret
 .DESCRIPTION
@@ -29,7 +29,8 @@ try {
 	$secureString = ConvertTo-SecureString -String $SecretValue -AsPlainText -Force
 	$secret = Set-AzKeyVaultSecret -VaultName $VaultName -Name $Name -SecretValue $secureString -ErrorAction Stop
 	Write-Output "Successfully created or updated secret '$Name' in vault '$VaultName'."
-} catch {
+}
+catch {
 	Write-Error $_
 	exit 1
 }

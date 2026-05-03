@@ -11,7 +11,7 @@
 	The name of the certificate issuer (e.g., Self, or a CA name).
 .PARAMETER SubjectName
 	The subject name for the certificate.
-.PARAMETER SecretContentType
+.PARAMETER ContentType
 	The content type of the secret (PKCS12 or PEM).
 .PARAMETER CurveName
 	Elliptic curve name for EC keys.
@@ -42,7 +42,7 @@ param(
 	[string]$SubjectName,
 
 	[ValidateSet('application/x-pkcs12', 'application/x-pem-file')]
-	[string]$SecretContentType = 'application/x-pkcs12',
+	[string]$ContentType = 'application/x-pkcs12',
 
 	[ValidateSet('P-256', 'P-384', 'P-521', 'P-256K', 'SECP256K1')]
 	[string]$CurveName,
@@ -65,7 +65,7 @@ try {
 		'ErrorAction'       = 'Stop'
 		'IssuerName'        = $IssuerName
 		'SubjectName'       = $SubjectName
-		'SecretContentType' = $SecretContentType
+		'SecretContentType' = $ContentType
 		'ValidityInMonths'  = $ValidityInMonths
 		'Confirm'           = $false
 	}
