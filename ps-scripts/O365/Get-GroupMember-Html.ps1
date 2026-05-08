@@ -3,19 +3,19 @@
 
 <#
 .SYNOPSIS
-    Azure AD: Retrieves members of a group
+    Azure AD: HTML report of group members
 .DESCRIPTION
-    Gets members (users and/or groups) of a group with optional recursive nested expansion.
+    Generates an HTML report of group members with optional recursive nested expansion.
 .PARAMETER GroupObjectId
     Unique object ID of the group
 .PARAMETER GroupName
     Display name of the group
 .PARAMETER Nested
-    Recursively enumerate nested group members
+    Recursively enumerate nested groups
 .PARAMETER MemberObjectTypes
     Filter by member type: All, Users, or Groups
 .EXAMPLE
-    PS> ./Get-GroupMember.ps1 -GroupName "Sales Team" -MemberObjectTypes Users
+    PS> ./Get-GroupMember-Html.ps1 -GroupName "Sales Team" | Out-File report.html
 .CATEGORY O365
 #>
 
@@ -39,27 +39,23 @@ Param(
 
 Process {
     try {
-        $result = [System.Collections.ArrayList]::new()
+        $members = [System.Collections.ArrayList]::new()
 
         function Get-NestedMembers {
             param($group)
 
-            $null = $result.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; ObjectType = "Group"; DisplayName = $group.DisplayName; ObjectId = $group.ObjectId })
+            $null = $members.Add([PSCustomObject]@{ Type = 'Group'; DisplayName = $group.DisplayName })
 
             if (($MemberObjectTypes -eq 'All') -or ($MemberObjectTypes -eq 'Users')) {
                 $users = Get-AzureADGroupMember -ObjectId $group.ObjectId -ErrorAction Stop | Where-Object { $_.ObjectType -eq 'User' } | Sort-Object -Property DisplayName
-                foreach ($u in $users) {
-                    $null = $result.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; ObjectType = "User"; DisplayName = $u.DisplayName; ObjectId = $u.ObjectId })
-                }
+                foreach ($u in $users) { $null = $members.Add([PSCustomObject]@{ Type = 'User'; DisplayName = $u.DisplayName }) }
             }
 
             if (($MemberObjectTypes -eq 'All') -or ($MemberObjectTypes -eq 'Groups')) {
                 $childGroups = Get-AzureADGroupMember -ObjectId $group.ObjectId -ErrorAction Stop | Where-Object { $_.ObjectType -eq 'Group' } | Sort-Object -Property DisplayName
                 foreach ($cg in $childGroups) {
                     if ($Nested) { Get-NestedMembers $cg }
-                    else {
-                        $null = $result.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; ObjectType = "Group"; DisplayName = $cg.DisplayName; ObjectId = $cg.ObjectId })
-                    }
+                    else { $null = $members.Add([PSCustomObject]@{ Type = 'Group'; DisplayName = $cg.DisplayName }) }
                 }
             }
         }
@@ -75,7 +71,9 @@ Process {
 
         Get-NestedMembers $grp
 
-        if ($result.Count -gt 0) { Write-Output $result }
+        if ($members.Count -gt 0) {
+            Write-Output ($members | ConvertTo-Html -Fragment)
+        }
         else { Write-Output "No members found" }
     }
     catch { throw }

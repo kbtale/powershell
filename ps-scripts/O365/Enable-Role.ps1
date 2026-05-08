@@ -1,19 +1,15 @@
-﻿#Requires -Version 5.1
+#Requires -Version 5.1
 #Requires -Modules AzureAD
 
 <#
 .SYNOPSIS
-    Azure AD: Enables a directory role
-
+    Azure AD: Enables a directory role instance
 .DESCRIPTION
-    Enables an instance of a directory role template in Azure Active Directory.
-
+    Enables an instance of a directory role template, making it available for assignment.
 .PARAMETER RoleName
-    Display name of the role to enable
-
+    Display name of the role to enable (from the predefined set of Azure AD roles)
 .EXAMPLE
     PS> ./Enable-Role.ps1 -RoleName "Application Administrator"
-
 .CATEGORY O365
 #>
 
@@ -33,9 +29,7 @@ Process {
     try {
         $roleTemplate = Get-AzureADDirectoryRoleTemplate -ErrorAction Stop | Where-Object { $_.DisplayName -eq $RoleName }
 
-        if ($null -eq $roleTemplate) {
-            throw "Role template '$RoleName' not found"
-        }
+        if ($null -eq $roleTemplate) { throw "Role template '$RoleName' not found" }
 
         $null = Enable-AzureADDirectoryRole -RoleTemplateId $roleTemplate.ObjectId -ErrorAction Stop
 
@@ -46,7 +40,5 @@ Process {
             Message   = "Role '$RoleName' enabled"
         }
     }
-    catch {
-        throw
-    }
+    catch { throw }
 }

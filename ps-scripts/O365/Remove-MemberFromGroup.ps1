@@ -1,34 +1,25 @@
-﻿#Requires -Version 5.1
+#Requires -Version 5.1
 #Requires -Modules AzureAD
 
 <#
 .SYNOPSIS
-    Azure AD: Removes members (users or groups) from target groups
-
+    Azure AD: Removes users and groups from target groups
 .DESCRIPTION
-    Removes members (users or groups) from target groups by name or by object ID.
-
+    Removes users and/or groups from one or more target groups. Supports identity resolution by name or by object ID.
 .PARAMETER TargetGroupNames
-    Display names of the groups from which to remove members
-
+    Display names of the target groups to remove members from
 .PARAMETER UserNames
-    Display names or user principal names of the users to remove from the target groups
-
+    Display names or user principal names of users to remove
 .PARAMETER GroupNames
-    Display names of the groups to remove from the target groups
-
+    Display names of groups to remove
 .PARAMETER GroupObjectIds
-    Unique IDs of the target groups from which to remove members
-
+    Object IDs of the target groups to remove members from
 .PARAMETER GroupIds
-    Unique object IDs of the groups to remove from the target groups
-
+    Object IDs of the groups to remove
 .PARAMETER UserIds
-    Unique object IDs of the users to remove from the target groups
-
+    Object IDs of the users to remove
 .EXAMPLE
     PS> ./Remove-MemberFromGroup.ps1 -TargetGroupNames "Sales Team" -UserNames "john.doe@contoso.com"
-
 .CATEGORY O365
 #>
 
@@ -55,131 +46,83 @@ Param(
 
 Process {
     try {
-        $results = @()
-        $hasError = $false
+        $results = [System.Collections.ArrayList]::new()
 
         if ($PSCmdlet.ParameterSetName -eq "Names") {
-            $resolvedIds = @()
-            foreach ($itm in $TargetGroupNames) {
+            $resolvedObjectIds = @()
+            foreach ($name in $TargetGroupNames) {
                 try {
-                    $tmp = Get-AzureADGroup -All $true -ErrorAction Stop | Where-Object -Property DisplayName -eq $itm
-                    if ($null -ne $tmp) { $resolvedIds += $tmp.ObjectID }
-                    else {
-                        $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Target group '$itm' not found" }
-                        $hasError = $true
-                    }
+                    $tmp = Get-AzureADGroup -All $true -ErrorAction Stop | Where-Object -Property DisplayName -eq $name
+                    if ($null -ne $tmp) { $resolvedObjectIds += $tmp.ObjectID }
+                    else { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Target group '$name' not found" }) }
                 }
-                catch {
-                    $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Target group '$itm' not found" }
-                    $hasError = $true
-                }
+                catch { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Target group '$name' not found" }) }
             }
-            $GroupObjectIds = $resolvedIds
+            $GroupObjectIds = $resolvedObjectIds
 
             if ($null -ne $UserNames) {
                 $resolvedUserIds = @()
-                foreach ($itm in $UserNames) {
+                foreach ($name in $UserNames) {
                     try {
-                        $tmp = Get-AzureADUser -All $true -ErrorAction Stop | Where-Object { ($_.DisplayName -eq $itm) -or ($_.UserPrincipalName -eq $itm) }
+                        $tmp = Get-AzureADUser -All $true -ErrorAction Stop | Where-Object { ($_.DisplayName -eq $name) -or ($_.UserPrincipalName -eq $name) }
                         if ($null -ne $tmp) { $resolvedUserIds += $tmp.ObjectID }
-                        else {
-                            $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "User '$itm' not found" }
-                            $hasError = $true
-                        }
+                        else { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "User '$name' not found" }) }
                     }
-                    catch {
-                        $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "User '$itm' not found" }
-                        $hasError = $true
-                    }
+                    catch { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "User '$name' not found" }) }
                 }
                 $UserIds = $resolvedUserIds
             }
 
             if ($null -ne $GroupNames) {
                 $resolvedGroupIds = @()
-                foreach ($itm in $GroupNames) {
+                foreach ($name in $GroupNames) {
                     try {
-                        $tmp = Get-AzureADGroup -All $true -ErrorAction Stop | Where-Object -Property DisplayName -eq $itm
+                        $tmp = Get-AzureADGroup -All $true -ErrorAction Stop | Where-Object -Property DisplayName -eq $name
                         if ($null -ne $tmp) { $resolvedGroupIds += $tmp.ObjectID }
-                        else {
-                            $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Group '$itm' not found" }
-                            $hasError = $true
-                        }
+                        else { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Group '$name' not found" }) }
                     }
-                    catch {
-                        $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Group '$itm' not found" }
-                        $hasError = $true
-                    }
+                    catch { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Group '$name' not found" }) }
                 }
                 $GroupIds = $resolvedGroupIds
             }
         }
 
         foreach ($gid in $GroupObjectIds) {
-            try {
-                $grp = Get-AzureADGroup -ObjectId $gid -ErrorAction Stop
-            }
-            catch {
-                $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "GroupObjectID '$gid' $($_.Exception.Message)" }
-                $hasError = $true
-                continue
+            try { $grp = Get-AzureADGroup -ObjectId $gid -ErrorAction Stop }
+            catch { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Target group '$gid' not found: $($_.Exception.Message)" }); continue }
+
+            if ($null -ne $GroupIds) {
+                foreach ($mid in $GroupIds) {
+                    try { $memberGrp = Get-AzureADGroup -ObjectId $mid -ErrorAction Stop }
+                    catch { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Group ID '$mid' not found: $($_.Exception.Message)" }); continue }
+
+                    if ($null -ne $memberGrp) {
+                        try {
+                            $null = Remove-AzureADGroupMember -ObjectId $gid -MemberId $mid -ErrorAction Stop
+                            $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Success"; Message = "Group '$($memberGrp.DisplayName)' removed from '$($grp.DisplayName)'" })
+                        }
+                        catch { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Group ID '$mid': $($_.Exception.Message)" }) }
+                    }
+                }
             }
 
-            if ($null -ne $grp) {
-                if ($null -ne $GroupIds) {
-                    foreach ($itm in $GroupIds) {
+            if ($null -ne $UserIds) {
+                foreach ($uid in $UserIds) {
+                    try { $usr = Get-AzureADUser -ObjectId $uid -ErrorAction Stop }
+                    catch { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "User ID '$uid' not found: $($_.Exception.Message)" }); continue }
+
+                    if ($null -ne $usr) {
                         try {
-                            $removeGrp = Get-AzureADGroup -ObjectId $itm -ErrorAction Stop
+                            $null = Remove-AzureADGroupMember -ObjectId $gid -MemberId $uid -ErrorAction Stop
+                            $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Success"; Message = "User '$($usr.DisplayName)' removed from '$($grp.DisplayName)'" })
                         }
-                        catch {
-                            $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "GroupID '$itm' $($_.Exception.Message)" }
-                            $hasError = $true
-                            continue
-                        }
-                        if ($null -ne $removeGrp) {
-                            try {
-                                $null = Remove-AzureADGroupMember -ObjectId $gid -MemberId $itm -ErrorAction Stop
-                                $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Success"; Message = "Group '$($removeGrp.DisplayName)' removed from Group '$($grp.DisplayName)'" }
-                            }
-                            catch {
-                                $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "GroupID '$itm' $($_.Exception.Message)" }
-                                $hasError = $true
-                            }
-                        }
+                        catch { $null = $results.Add([PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "User ID '$uid': $($_.Exception.Message)" }) }
                     }
                 }
-                if ($null -ne $UserIds) {
-                    foreach ($itm in $UserIds) {
-                        try {
-                            $usr = Get-AzureADUser -ObjectId $itm -ErrorAction Stop
-                        }
-                        catch {
-                            $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "UserID '$itm' $($_.Exception.Message)" }
-                            $hasError = $true
-                            continue
-                        }
-                        if ($null -ne $usr) {
-                            try {
-                                $null = Remove-AzureADGroupMember -ObjectId $gid -MemberId $itm -ErrorAction Stop
-                                $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Success"; Message = "User '$($usr.DisplayName)' removed from Group '$($grp.DisplayName)'" }
-                            }
-                            catch {
-                                $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "UserID '$itm' $($_.Exception.Message)" }
-                                $hasError = $true
-                            }
-                        }
-                    }
-                }
-            }
-            else {
-                $results += [PSCustomObject]@{ Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; Status = "Error"; Message = "Group '$gid' not found" }
-                $hasError = $true
             }
         }
 
         Write-Output $results
     }
-    catch {
-        throw
-    }
+    catch { throw }
 }
