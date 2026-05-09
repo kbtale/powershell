@@ -14,7 +14,7 @@ try {
     
     sidebarSteps = categories.map(cat => ({
       text: cat,
-      collapsed: false,
+      collapsed: true,
       items: commands
         .filter(c => c.category === cat)
         .map(c => ({
@@ -36,11 +36,15 @@ export default defineConfig({
       { text: 'Guide', link: '/guide' }
     ],
     sidebar: sidebarSteps,
+    aside: false,
     socialLinks: [
       { icon: 'github', link: 'https://github.com/kbtale/powershell' }
     ],
     search: {
-      provider: 'local'
+      provider: 'local',
+      options: {
+        detailedView: true
+      }
     }
   },
   

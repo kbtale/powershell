@@ -1,25 +1,99 @@
 /**
  * VitePress Custom Theme Overrides
- * Standardizing the documentation platform with premium, edge-to-edge layout.
  */
 
 :root {
-  /* Increase the overall layout ceiling */
-  --vp-layout-max-width: 100% !important;
+  --vp-layout-max-width: 100%;
+  --vp-sidebar-width: 220px;
 }
 
-/* Allow the documentation content to breathe and fill the screen */
 .VPDoc .container {
-  max-width: 100% !important;
-  margin: 0 !important;
+  max-width: 100%;
+  margin: 0;
 }
 
 .VPDoc .content {
-    max-width: 100% !important;
-    padding: 0 32px !important;
+  max-width: none;
+  padding: 0 32px 128px;
 }
 
-/* Ensure the playground component utilizes the available width */
+.VPDoc .content-container {
+  max-width: none;
+}
+
+#local-search {
+  flex-grow: 1;
+  width: 640px;
+}
+
+#local-search .DocSearch-Button {
+  width: 100%;
+  border-radius: 8px;
+}
+
+/* Make search modal wider */
+.DocSearch-Modal {
+  max-width: 720px;
+}
+
+/* Sidebar width control */
+.VPSidebar {
+  width: var(--vp-sidebar-width);
+}
+
+/* Remove empty space between sidebar groups */
+.VPSidebarItem .items {
+  padding-bottom: 0;
+}
+
+.VPSidebarItem + .VPSidebarItem {
+  border-top: 1px solid var(--vp-c-divider-light);
+}
+
+.VPSidebarItem .text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Layout grid override: content takes more space */
+.VPContent .container {
+  grid-template-columns: 220px 1fr;
+}
+
+/* Single page mode */
+.VPDoc.has-sidebar .container {
+  grid-template-columns: 220px 1fr;
+}
+
 .playground-wrapper {
   width: 100%;
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --vp-sidebar-width: 240px;
+  }
+
+  .VPContent .container {
+    grid-template-columns: 240px 1fr;
+  }
+
+  .VPDoc.has-sidebar .container {
+    grid-template-columns: 240px 1fr;
+  }
+
+  #local-search {
+    width: 720px;
+  }
+}
+
+@media (max-width: 768px) {
+  .VPDoc .content {
+    padding: 0 16px 96px;
+  }
+
+  #local-search {
+    width: 100%;
+  }
 }
