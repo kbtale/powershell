@@ -1,0 +1,49 @@
+﻿<#
+.SYNOPSIS
+	Installs basic apps
+.DESCRIPTION
+	This PowerShell script installs basic Windows apps such as browser, e-mail client, etc. NOTE: Apps from Microsoft Store are preferred (due to security and automatic updates).
+.EXAMPLE
+	PS> ./install-basic-apps.ps1
+		⏳ (1) Loading basic-apps.csv from data/ folder...
+		⏳ (2) Will install/upgrade 39 basic apps: 7-Zip, Aquile Reader ...
+		NOTE: Installation starts in 15 seconds or press <Control> <C> to abort...
+.CATEGORY Apps
+#>
+
+#requires -version 5.1
+
+try {
+	$stopWatch = [system.diagnostics.stopwatch]::startNew()
+
+	Write-Host "⏳ (1) Loading basic-apps.csv from data/ folder..."
+	$table = Import-CSV "$PSScriptRoot/data/basic-apps.csv"
+	$numEntries = $table.count
+	Write-Host "⏳ (2) Will install/upgrade $numEntries basic apps: " -noNewline
+	foreach($row in $table) {
+		[string]$appName = $row.APPLICATION
+		Write-Host "$appName, " -noNewline
+	}
+	""
+	"NOTE: Installation starts in 15 seconds or press <Control> <C> to abort..."
+	Start-Sleep -seconds 15
+
+	[int]$step = 3
+	[int]$numSkipped = 0
+	foreach($row in $table) {
+		[string]$appName = $row.APPLICATION
+		[string]$category = $row.CATEGORY
+		[string]$appID = $row.APPID
+		Write-Host " "
+		Write-Host "⏳ ($step/$($numEntries + 2)) Installing $category '$appName'..."
+		& winget install --id $appID --silent --accept-package-agreements --accept-source-agreements
+        	if ($lastExitCode -ne 0) { $numSkipped++ }
+		$step++
+	}
+	[int]$numInstalled = ($numEntries - $numSkipped)
+	[int]$elapsed = $stopWatch.Elapsed.TotalSeconds
+	"✅ $numInstalled basic apps installed ($numSkipped skipped, took $($elapsed)s)"
+	exit 0
+} catch {
+throw
+}
