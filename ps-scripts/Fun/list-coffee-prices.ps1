@@ -1,0 +1,56 @@
+﻿<#
+.SYNOPSIS
+	List coffee prices
+.DESCRIPTION
+	This PowerShell script queries alphavantage.co and lists the global price of coffee (monthly, in cents per points).
+.EXAMPLE
+	PS> ./list-coffee-prices.ps1
+		Monthly Global Price of Coffee (by alphavantage.co, in cents per pound)
+		-----------------------------------------------------------------------
+		2024-04-01 ████████████████████████████████████████████████████████████████████▌ 240
+.CATEGORY Fun
+#>
+
+#Requires -Version 5.1
+
+function WriteHorizontalBar { param([float]$Value, [float]$Max)
+	$Num = ($Value * 100.0) / $Max
+	while ($Num -ge 1.0) { Write-Host "█" -noNewline; $Num -= 1.0 }
+	if ($Num -ge 0.875) {
+		Write-Host "▉" -noNewline
+	} elseif ($Num -ge 0.75) {
+		Write-Host "▊" -noNewline
+	} elseif ($Num -ge 0.625) {
+		Write-Host "▋" -noNewline
+	} elseif ($Num -ge 0.5) {
+		Write-Host "▌" -noNewline
+	} elseif ($Num -ge 0.375) {
+		Write-Host "▍" -noNewline
+	} elseif ($Num -ge 0.25) {
+		Write-Host "▎" -noNewline
+	} elseif ($Num -ge 0.125) {
+		Write-Host "▏" -noNewline
+	}
+	Write-Host " $Value" -noNewline
+}
+
+try {
+	Write-Progress "Loading data from www.alphavantage.co..."
+	$prices = (Invoke-WebRequest -URI "https://www.alphavantage.co/query?function=COFFEE&interval=monthly&apikey=demo" -userAgent "curl" -useBasicParsing).Content | ConvertFrom-Json
+	Write-Progress -completed "Done."
+
+	""
+	"Monthly $($prices.name) 1990-2025 ($($prices.unit), source: alphavantage.co)"
+	"------------------------------------------------------------------------------"
+	[array]::Reverse($prices.data)
+	foreach($item in $prices.data) {
+		if ($item.value -eq ".") { continue }
+		Write-Host "$($item.date) " -noNewline
+		[int]$value = $item.value
+		WriteHorizontalBar $value 400.0
+		Write-Host "ct"
+	}
+	exit 0
+} catch {
+throw
+}
