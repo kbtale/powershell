@@ -54,6 +54,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+}
+
+.VPSidebarItem .link {
+  overflow: hidden;
 }
 
 /* Layout grid override: content takes more space */
