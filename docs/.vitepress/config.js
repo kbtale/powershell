@@ -11,9 +11,21 @@ try {
     const commands = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'))
     
     const categories = [...new Set(commands.map(c => c.category))]
-    
+
+    const categoryNames = {
+      ActiveDirectory: 'Active Directory',
+      DBSystems: 'Database Systems',
+      FileManagement: 'File Management',
+      MgmtGraph: 'Microsoft Graph',
+      O365: 'Office 365',
+      SecretManagement: 'Secret Management',
+      TextArt: 'Text Art',
+      UserManagement: 'User Management',
+      WinPrintManagement: 'Windows Print Management'
+    }
+
     sidebarSteps = categories.map(cat => ({
-      text: cat,
+      text: categoryNames[cat] || cat,
       collapsed: true,
       items: commands
         .filter(c => c.category === cat)
