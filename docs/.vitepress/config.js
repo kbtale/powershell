@@ -42,6 +42,9 @@ try {
 export default defineConfig({
   title: "PowerShell Docs",
   description: "An interactive directory of PowerShell commands.",
+  head: [
+    ['link', { rel: 'icon', href: '/favicon.ico' }]
+  ],
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },

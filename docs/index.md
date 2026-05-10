@@ -5,6 +5,9 @@ hero:
   name: "PowerShell Docs"
   text: "Find. Tweak. Copy."
   tagline: "An interactive directory of 2,260+ PowerShell scripts across 25 categories."
+  image:
+    src: /ps-transparent.png
+    alt: PowerShell
   actions:
     - theme: brand
       text: Get Started

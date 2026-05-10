@@ -75,6 +75,11 @@
   width: 100%;
 }
 
+.VPHero .image-container .VPImage {
+  max-width: 280px;
+  transform: translate(-40%, -50%);
+}
+
 @media (min-width: 1440px) {
   :root {
     --vp-sidebar-width: 240px;
