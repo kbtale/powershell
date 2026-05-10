@@ -1,5 +1,7 @@
 # PowerShell Docs
 
+https://github.com/user-attachments/assets/92e746f7-2eab-4086-a0b7-e0f5bedd666b
+
 An interactive directory of PowerShell scripts. Find a script, adjust parameters, and copy the result.
 
 ## Features
