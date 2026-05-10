@@ -31,6 +31,16 @@ const categoryMeta = {
   WinPrintManagement: { desc: 'Set up and manage printers and print queues' }
 }
 
+const scriptCount = manifest.length
+
+const categoryCount = computed(() => {
+  const counts = {}
+  for (const cmd of manifest) {
+    counts[cmd.category] = (counts[cmd.category] || 0) + 1
+  }
+  return Object.keys(counts).length
+})
+
 const categories = computed(() => {
   const counts = {}
   const firstIds = {}
@@ -52,8 +62,9 @@ const categories = computed(() => {
 <template>
   <div class="home-features">
     <div class="container">
+
       <h2 class="section-title">Browse by Category</h2>
-      <p class="section-subtitle">{{ manifest.length }} scripts across {{ categories.length }} categories</p>
+      <p class="section-subtitle">{{ scriptCount }} scripts across {{ categoryCount }} categories</p>
       <div class="feature-grid">
         <a
           v-for="cat in categories"
@@ -96,6 +107,21 @@ const categories = computed(() => {
           <span class="feature-count">{{ cat.count }}</span>
         </a>
       </div>
+
+      <div class="cta-section">
+        <div class="cta-card">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          <div class="cta-text">
+            <h3 class="cta-title">Open Source</h3>
+            <p class="cta-desc">Contribute, report issues, or request scripts on GitHub.</p>
+          </div>
+          <a class="cta-btn" href="https://github.com/kbtale/powershell" target="_blank" rel="noopener">
+            View on GitHub
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V7.8H7.8"/></svg>
+          </a>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -195,6 +221,66 @@ const categories = computed(() => {
   flex-shrink: 0;
 }
 
+.cta-section {
+  padding-top: 48px;
+}
+
+.cta-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+}
+
+.cta-card > svg {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: var(--vp-c-text-2);
+}
+
+.cta-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.cta-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  margin: 0 0 2px;
+}
+
+.cta-desc {
+  font-size: 0.875rem;
+  color: var(--vp-c-text-2);
+  margin: 0;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 8px 16px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.cta-btn:hover {
+  color: var(--vp-c-brand-1);
+  border-color: var(--vp-c-brand-1);
+}
+
 @media (max-width: 768px) {
   .home-features {
     padding: 32px 16px 48px;
@@ -202,6 +288,16 @@ const categories = computed(() => {
 
   .feature-grid {
     grid-template-columns: 1fr;
+  }
+
+  .cta-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .cta-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

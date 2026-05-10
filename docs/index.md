@@ -11,7 +11,9 @@ hero:
       link: /guide
     - theme: alt
       text: Browse Scripts
-      link: /scripts/test-ping
+      link: /scripts/Add-ComputerToGroup
 ---
+
+<HomeDemo />
 
 <HomeFeatures />
