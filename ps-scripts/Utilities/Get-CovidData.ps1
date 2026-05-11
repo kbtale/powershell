@@ -2,7 +2,7 @@
 
 <#
 .SYNOPSIS
-    User Management: Retrieves COVID-19 statistics by country
+    Utilities: Retrieves COVID-19 statistics by country
 .DESCRIPTION
     Fetches hourly updated COVID-19 statistics by country from the RapidAPI COVID-19 Data API.
 .PARAMETER RapidApiKey
@@ -13,7 +13,7 @@
     Include global totals
 .EXAMPLE
     PS> ./Get-CovidData.ps1 -RapidApiKey "your-key" -Countries "Germany", "USA" -ShowTotals
-.CATEGORY User Management
+.CATEGORY Utilities
 #>
 
 [CmdletBinding()]

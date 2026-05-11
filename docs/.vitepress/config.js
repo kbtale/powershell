@@ -14,6 +14,8 @@ try {
 
     const categoryNames = {
       ActiveDirectory: 'Active Directory',
+      AWS: 'AWS Cloud',
+      Containers: 'Containers & Docker',
       DBSystems: 'Database Systems',
       FileManagement: 'File Management',
       MgmtGraph: 'Microsoft Graph',
