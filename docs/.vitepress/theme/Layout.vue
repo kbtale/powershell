@@ -1,9 +1,11 @@
 <script setup>
 import DefaultTheme from 'vitepress/theme'
+import { Analytics } from '@vercel/analytics/vue'
 const { Layout } = DefaultTheme
 </script>
 
 <template>
+  <Analytics />
   <Layout>
     <template #sidebar-nav-after>
       <div class="sidebar-footer">
