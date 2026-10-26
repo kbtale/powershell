@@ -12,6 +12,7 @@
     "preview": "vitepress preview docs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "vue": "^3.4.15",
     "vue-i18n": "^9.9.1",
     "vue-router": "^4.2.5"
